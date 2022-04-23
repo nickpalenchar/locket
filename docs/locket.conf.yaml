@@ -1,0 +1,20 @@
+# Version is always "1"
+version: "1"
+
+# auth. Only aws is supported
+
+auth:
+  aws:
+    # the profile to use. This must be saved under ~/.aws/config and have
+    # permissions to read and write from the target bucket.
+    profile: default
+
+    # name of the bucket that files will be backed up to
+    # bucket: your-name-here
+
+    # optional path under the bucket.
+    # bucketPrefix: /path/to/prefix
+# list of directories that will be backed up
+# directories:
+#   - /path/to/dir1
+#   - ~/path/to/dir2
