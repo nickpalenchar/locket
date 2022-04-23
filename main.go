@@ -8,10 +8,24 @@ import (
 	"locket/unix/tar"
 )
 
+/*
+main (for now) encrypts and uploads a directory tester
+to an s3 bucket
+
+tester must be under the home directory (i.e. ~/tester)
+
+A config file named `.locket.conf.yaml` must also be
+present under the home directory. See docs/.locket.conf.yaml
+for an example.
+
+For s3 upload to work correctly, a profile must be set with the
+correct s3 permissions and referenced in .locket.conf.yaml.
+See docs/aws-config.md
+*/
 func main() {
 	opts := configloader.Config()
 
-	a := tar.Create("/Users/nick/tester")
+	a := tar.Create("~/tester")
 	encrypted := openssl.Enc(a, "tester")
 
 	aws.UploadToS3(
@@ -21,6 +35,5 @@ func main() {
 		map[string]string{},
 	)
 
-	fmt.Println("hello world")
-	fmt.Println("git here ", opts.Directories)
+	fmt.Println("Done 🔐")
 }

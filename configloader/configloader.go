@@ -23,7 +23,7 @@ type Configopts struct {
 func Config() *Configopts {
 	opts := Configopts{}
 
-	p := path.Join(os.Getenv("HOME"), ".archiver.conf.yaml")
+	p := path.Join(os.Getenv("HOME"), ".locket.conf.yaml")
 
 	var data, _ = os.ReadFile(p)
 
