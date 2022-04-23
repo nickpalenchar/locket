@@ -1,4 +1,4 @@
-module archiver
+module locket
 
 go 1.18
 

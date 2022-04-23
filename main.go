@@ -1,11 +1,11 @@
 package main
 
 import (
-	"archiver/aws"
-	"archiver/configloader"
-	"archiver/unix/openssl"
-	"archiver/unix/tar"
 	"fmt"
+	"locket/aws"
+	"locket/configloader"
+	"locket/unix/openssl"
+	"locket/unix/tar"
 )
 
 func main() {
