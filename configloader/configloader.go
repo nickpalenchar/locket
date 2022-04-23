@@ -11,6 +11,12 @@ import (
 type Configopts struct {
 	Version     string   `yaml:"files"`
 	Directories []string `yaml:",flow"`
+	Auth        struct {
+		Aws struct {
+			Profile string `yaml:"profile"`
+			Bucket  string `yaml:"bucket"`
+		}
+	}
 }
 
 /* Config loads the config file located at the user's home */
