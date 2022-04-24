@@ -14,6 +14,7 @@ import (
 
 type CliCommand struct {
 	Name string
+	Help string
 	Func CliFunction
 }
 
@@ -25,19 +26,25 @@ shell environment
 type CliFunction func() int
 
 type Cli struct {
+	Name     string
 	commands map[string]CliCommand
 }
 
-func NewCli() *Cli {
+func NewCli(name string) *Cli {
 	commands := make(map[string]CliCommand)
 	return &Cli{
+		Name:     name,
 		commands: commands,
 	}
 }
 
+type CliOpts struct {
+	Help string
+}
+
 /* Register registers a function on the cli, so it
 can be invoked by name via command line arguments */
-func (c *Cli) Register(name string, f CliFunction) {
+func (c *Cli) Register(name string, f CliFunction, o *CliOpts) {
 
 	_, exists := c.commands[name]
 
@@ -48,28 +55,41 @@ func (c *Cli) Register(name string, f CliFunction) {
 	c.commands[name] = CliCommand{
 		Name: name,
 		Func: f,
+		Help: o.Help,
 	}
 }
 
 func (c *Cli) Run() (code int) {
-	fmt.Println("time to run stuff")
 	args := os.Args[1:]
 
 	if len(args) == 0 {
-		cliHelp()
+		c.Help()
 		return 1
 	}
 
 	cmd, ok := c.commands[args[0]]
 
 	if !ok {
-		cliHelp()
+		c.Help()
 		return 1
 	}
 
 	code = cmd.Func()
 
 	return code
+}
+
+func (c *Cli) Help() {
+	fmt.Printf("Usage:\n\n")
+	fmt.Printf("    %s <command>\n\n", c.Name)
+
+	Print("Commands:\n")
+	for command := range c.commands {
+		fmt.Printf("    %-14s %s\n",
+			command,
+			c.commands[command].Help,
+		)
+	}
 }
 
 /*
@@ -88,9 +108,4 @@ func Prompt(message string) string {
 	reader := bufio.NewReader(os.Stdin)
 	input, _ := reader.ReadString('\n')
 	return strings.Trim(input, "\n")
-}
-
-func cliHelp() {
-	fmt.Println("Invalid command")
-	// TODO list commands available
 }
