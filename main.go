@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"locket/aws"
+	"locket/cli"
 	"locket/configloader"
 	"locket/unix/openssl"
 	"locket/unix/tar"
@@ -23,6 +24,17 @@ correct s3 permissions and referenced in .locket.conf.yaml.
 See docs/aws-config.md
 */
 func main() {
+	cli := cli.NewCli()
+	cli.Register("hello", hello)
+	cli.Run()
+}
+
+func hello() int {
+	cli.Print("hello world")
+	return 0
+}
+
+func mainupload() {
 	opts := configloader.Config()
 
 	a := tar.Create("~/tester")
