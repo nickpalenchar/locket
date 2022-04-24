@@ -25,6 +25,10 @@ func Config() *Configopts {
 
 	p := path.Join(os.Getenv("HOME"), ".locket.conf.yaml")
 
+	if _, err := os.Stat(p); err != nil {
+		log.Fatalf("error: No config file found (looking for %s)", p)
+	}
+
 	var data, _ = os.ReadFile(p)
 
 	err := yaml.Unmarshal([]byte(data), &opts)
