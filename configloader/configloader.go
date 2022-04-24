@@ -21,11 +21,21 @@ type AwsOpts struct {
 	Bucket  string `yaml:"bucket"`
 }
 
+func (c *Configopts) ToFile(filepath string) {
+	yamlData, err := yaml.Marshal(c)
+
+	if err != nil {
+		log.Fatalf("Error writing config to file: %s", err)
+	}
+
+	os.WriteFile(filepath, yamlData, 0666)
+}
+
 /* Config loads the config file located at the user's home */
 func Config() *Configopts {
 	opts := Configopts{}
 
-	p := path.Join(os.Getenv("HOME"), ".locket.conf.yaml")
+	p := ConfigPath()
 
 	if _, err := os.Stat(p); err != nil {
 		log.Fatalf("error: No config file found (looking for %s)", p)
@@ -40,9 +50,14 @@ func Config() *Configopts {
 	return &opts
 }
 
+func ConfigPath() string {
+	return path.Join(os.Getenv("HOME"), ".locket.conf.yaml")
+}
+
 func NewConfig(dir string, awsProfile string, awsBucket string) *Configopts {
 	return &Configopts{
-		Version: "1",
+		Version:     "1",
+		Directories: []string{dir},
 		Auth: struct{ Aws AwsOpts }{
 			Aws: AwsOpts{
 				Profile: awsProfile,

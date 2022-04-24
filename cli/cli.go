@@ -6,8 +6,10 @@ functions as associated with the cli
 package cli
 
 import (
+	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type CliCommand struct {
@@ -75,6 +77,17 @@ Print takes a string and prints it to the terminal
 */
 func Print(s string) {
 	fmt.Println(s)
+}
+
+/*
+Prompt prompts the users for a value and retruns
+it
+*/
+func Prompt(message string) string {
+	fmt.Print(message)
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	return strings.Trim(input, "\n")
 }
 
 func cliHelp() {
