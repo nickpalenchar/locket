@@ -22,6 +22,10 @@ func AddCommands(c *cli.Cli) {
 		Help: "Create an encrypted backup to s3",
 	})
 
+	c.Register("restore", commandRestore, &cli.CliOpts{
+		Help: "Restore files from a backup",
+	})
+
 	debugcommands.AddDebugCommands(c)
 }
 

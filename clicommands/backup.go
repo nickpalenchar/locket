@@ -5,6 +5,7 @@ import (
 	"locket/aws"
 	"locket/cli"
 	"locket/configloader"
+	"locket/metadata"
 	"locket/unix/openssl"
 	"locket/unix/tar"
 	"os"
@@ -45,6 +46,7 @@ func encryptAndUploadToS3(dir, bucket, profile, prefix string) {
 	aws.UploadToS3(encrypted, bucket, profile, prefix+"/"+normalizeFilepath(dir), map[string]string{
 		"Created":          isoDateString(now),
 		"OriginalFilepath": dir,
+		"locket-version":   metadata.ApiVersion(),
 	})
 
 }

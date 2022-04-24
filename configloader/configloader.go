@@ -35,7 +35,7 @@ func (c *Configopts) ToFile(filepath string) {
 func Config() *Configopts {
 	opts := Configopts{}
 
-	p := ConfigPath()
+	p := path.Join(os.Getenv("HOME"), ".locket.conf.yaml")
 
 	if _, err := os.Stat(p); err != nil {
 		log.Fatalf("error: No config file found (looking for %s)", p)
@@ -56,8 +56,7 @@ func ConfigPath() string {
 
 func NewConfig(dir string, awsProfile string, awsBucket string) *Configopts {
 	return &Configopts{
-		Version:     "1",
-		Directories: []string{dir},
+		Version: "1",
 		Auth: struct{ Aws AwsOpts }{
 			Aws: AwsOpts{
 				Profile: awsProfile,
