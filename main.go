@@ -20,7 +20,7 @@ correct s3 permissions and referenced in .locket.conf.yaml.
 See docs/aws-config.md
 */
 func main() {
-	cli := cli.NewCli()
+	cli := cli.NewCli("locket")
 	clicommands.AddCommands(cli)
 	cli.Run()
 }

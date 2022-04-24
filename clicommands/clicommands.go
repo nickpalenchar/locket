@@ -1,6 +1,6 @@
 /*
 package clicommands contains the higher-order functions to be ran by the cli.
-it imports other functions as nescessary
+it imports other functions as necessary
 */
 package clicommands
 
@@ -14,7 +14,9 @@ import (
 )
 
 func AddCommands(c *cli.Cli) {
-	c.Register("init", commandInit)
+	c.Register("init", commandInit, &cli.CliOpts{
+		Help: "Interactively generate config file",
+	})
 
 	debugcommands.AddDebugCommands(c)
 }

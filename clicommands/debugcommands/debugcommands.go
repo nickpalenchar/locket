@@ -20,8 +20,8 @@ import (
 
 func AddDebugCommands(c *cli.Cli) {
 	if os.Getenv("__LOCKET_DEBUG") != "" {
-		c.Register("d--hello", commandHello)
-		c.Register("d--test-upload", testUpload)
+		c.Register("d--hello", commandHello, &cli.CliOpts{})
+		c.Register("d--test-upload", testUpload, &cli.CliOpts{})
 	}
 }
 
