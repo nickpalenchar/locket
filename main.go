@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"locket/aws"
-	"locket/configloader"
-	"locket/unix/openssl"
-	"locket/unix/tar"
+	"locket/cli"
+	"locket/clicommands"
 )
 
 /*
@@ -23,17 +20,7 @@ correct s3 permissions and referenced in .locket.conf.yaml.
 See docs/aws-config.md
 */
 func main() {
-	opts := configloader.Config()
-
-	a := tar.Create("~/tester")
-	encrypted := openssl.Enc(a, "tester")
-
-	aws.UploadToS3(
-		encrypted,
-		opts.Auth.Aws.Bucket,
-		opts.Auth.Aws.Profile,
-		map[string]string{},
-	)
-
-	fmt.Println("Done 🔐")
+	cli := cli.NewCli()
+	clicommands.AddCommands(cli)
+	cli.Run()
 }
