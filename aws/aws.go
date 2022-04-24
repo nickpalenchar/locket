@@ -26,11 +26,11 @@ func UploadToS3(data *bytes.Buffer, bucket string, profile string, metadata map[
 	client := s3.NewFromConfig(cfg)
 
 	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String("testname"),
-		Body:   data,
+		Bucket:   aws.String(bucket),
+		Key:      aws.String("testname"),
+		Body:     data,
 		Metadata: metadata,
-	}) 
+	})
 
 	if err != nil {
 		log.Fatalf("Error while uploading to s3: %s", err)

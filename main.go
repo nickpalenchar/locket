@@ -1,12 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"locket/aws"
 	"locket/cli"
-	"locket/configloader"
-	"locket/unix/openssl"
-	"locket/unix/tar"
+	"locket/clicommands"
 )
 
 /*
@@ -25,27 +21,6 @@ See docs/aws-config.md
 */
 func main() {
 	cli := cli.NewCli()
-	cli.Register("hello", hello)
+	clicommands.AddCommands(cli)
 	cli.Run()
-}
-
-func hello() int {
-	cli.Print("hello world")
-	return 0
-}
-
-func mainupload() {
-	opts := configloader.Config()
-
-	a := tar.Create("~/tester")
-	encrypted := openssl.Enc(a, "tester")
-
-	aws.UploadToS3(
-		encrypted,
-		opts.Auth.Aws.Bucket,
-		opts.Auth.Aws.Profile,
-		map[string]string{},
-	)
-
-	fmt.Println("Done 🔐")
 }

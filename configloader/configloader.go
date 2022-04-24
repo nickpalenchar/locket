@@ -12,11 +12,13 @@ type Configopts struct {
 	Version     string   `yaml:"files"`
 	Directories []string `yaml:",flow"`
 	Auth        struct {
-		Aws struct {
-			Profile string `yaml:"profile"`
-			Bucket  string `yaml:"bucket"`
-		}
+		Aws AwsOpts
 	}
+}
+
+type AwsOpts struct {
+	Profile string `yaml:"profile"`
+	Bucket  string `yaml:"bucket"`
 }
 
 /* Config loads the config file located at the user's home */
@@ -36,4 +38,16 @@ func Config() *Configopts {
 		log.Fatalf("error: %v", err)
 	}
 	return &opts
+}
+
+func NewConfig(dir string, awsProfile string, awsBucket string) *Configopts {
+	return &Configopts{
+		Version: "1",
+		Auth: struct{ Aws AwsOpts }{
+			Aws: AwsOpts{
+				Profile: awsProfile,
+				Bucket:  awsBucket,
+			},
+		},
+	}
 }
