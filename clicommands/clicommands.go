@@ -18,6 +18,10 @@ func AddCommands(c *cli.Cli) {
 		Help: "Interactively generate config file",
 	})
 
+	c.Register("backup", commandBackup, &cli.CliOpts{
+		Help: "Create an encrypted backup to s3",
+	})
+
 	debugcommands.AddDebugCommands(c)
 }
 

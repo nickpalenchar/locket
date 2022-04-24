@@ -10,12 +10,14 @@ __LOCKET_DEBUG is set.
 package debugcommands
 
 import (
+	"fmt"
 	"locket/aws"
 	"locket/cli"
 	"locket/configloader"
 	"locket/unix/openssl"
 	"locket/unix/tar"
 	"os"
+	"strings"
 )
 
 func AddDebugCommands(c *cli.Cli) {
@@ -27,6 +29,8 @@ func AddDebugCommands(c *cli.Cli) {
 
 func commandHello() int {
 	cli.Print("Hello world!")
+	s := strings.ReplaceAll("hello/world:hh:ss.hhh", "/:", "_")
+	fmt.Println(s)
 	return 0
 }
 
@@ -40,6 +44,7 @@ func testUpload() int {
 		encrypted,
 		opts.Auth.Aws.Bucket,
 		opts.Auth.Aws.Profile,
+		"tester",
 		map[string]string{},
 	)
 

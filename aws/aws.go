@@ -15,7 +15,7 @@ import (
 )
 
 /* UploadToS3 uploads data to an s3 bucket */
-func UploadToS3(data *bytes.Buffer, bucket string, profile string, metadata map[string]string) {
+func UploadToS3(data *bytes.Buffer, bucket, profile, key string, metadata map[string]string) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithSharedConfigProfile(profile))
 
@@ -27,7 +27,7 @@ func UploadToS3(data *bytes.Buffer, bucket string, profile string, metadata map[
 
 	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket:   aws.String(bucket),
-		Key:      aws.String("testname"),
+		Key:      aws.String(key),
 		Body:     data,
 		Metadata: metadata,
 	})
