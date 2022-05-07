@@ -5,10 +5,8 @@ aws s3, as streams of Bytes
 package aws
 
 import (
-	"bytes"
 	"context"
 	"io"
-	"locket/cli"
 	"log"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -17,57 +15,48 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
-/* UploadToS3 uploads data to an s3 bucket */
-func UploadToS3(data *bytes.Buffer, bucket, profile, key string, metadata map[string]string) {
+type S3Client struct {
+	Bucket *string
+	Client s3.Client
+}
 
+func NewS3Client(profile, bucket string) S3Client {
 	client, err := getClient(profile)
-
 	if err != nil {
-		log.Fatalf("Error uploading to s3: %s", err)
+		log.Fatalf("Cannot create s3 client: %s", err)
 	}
+	return S3Client{
+		Client: *client,
+		Bucket: aws.String(bucket),
+	}
+}
 
-	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket:   aws.String(bucket),
+func (s *S3Client) Upload(data io.Reader, key string, metadata map[string]string) error {
+	_, err := s.Client.PutObject(context.TODO(), &s3.PutObjectInput{
+		Bucket:   s.Bucket,
 		Key:      aws.String(key),
 		Body:     data,
 		Metadata: metadata,
 	})
 
-	if err != nil {
-		log.Fatalf("Error while uploading to s3: %s", err)
-	}
+	return err
 }
 
-func DownloadFromS3(bucket, profile, key string) io.ReadCloser {
-	client, err := getClient(profile)
-	if err != nil {
-		log.Fatalf("Error downloading from s3: %s", err)
-	}
-	output, err := client.GetObject(context.TODO(), &s3.GetObjectInput{Bucket: aws.String(bucket), Key: aws.String(key)})
+func (s *S3Client) Download(key string) io.ReadCloser {
+	output, err := s.Client.GetObject(context.TODO(), &s3.GetObjectInput{
+		Bucket: s.Bucket,
+		Key:    aws.String(key),
+	})
 	if err != nil {
 		log.Fatalf("Could not retrieve backup from s3: %s", err)
 	}
-	cli.Prompt("$$")
-
 	return output.Body
 }
 
-/*
-ListTopLevelObject returns only objects at the root
-of an s3 bucket, so that the list is similar to a
-unix command (top level directories and files but
-not the contents of said directories)
-*/
-func ListObjects(bucket, profile string) []types.Object {
-	client, err := getClient(profile)
-
-	if err != nil {
-		log.Fatalf("Error listing recent backups: %s", err)
-	}
-
-	objs, err := client.ListObjectsV2(
+func (s *S3Client) List() []types.Object {
+	objs, err := s.Client.ListObjectsV2(
 		context.TODO(),
-		&s3.ListObjectsV2Input{Bucket: aws.String(bucket)},
+		&s3.ListObjectsV2Input{Bucket: s.Bucket},
 	)
 
 	if err != nil {

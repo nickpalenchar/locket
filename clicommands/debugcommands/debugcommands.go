@@ -20,6 +20,14 @@ import (
 	"strings"
 )
 
+var s3Client aws.S3Client
+var conf configloader.Configopts
+
+func init() {
+	conf = *configloader.Config()
+	s3Client = aws.NewS3Client(conf.Auth.Aws.Profile, conf.Auth.Aws.Bucket)
+}
+
 func AddDebugCommands(c *cli.Cli) {
 	if os.Getenv("__LOCKET_DEBUG") != "" {
 		c.Register("d--hello", commandHello, &cli.CliOpts{})
@@ -35,15 +43,12 @@ func commandHello() int {
 }
 
 func testUpload() int {
-	opts := configloader.Config()
 
 	a := tar.Create("~/tester")
 	encrypted := openssl.Enc(a, "tester")
 
-	aws.UploadToS3(
+	s3Client.Upload(
 		encrypted,
-		opts.Auth.Aws.Bucket,
-		opts.Auth.Aws.Profile,
 		"tester",
 		map[string]string{},
 	)
