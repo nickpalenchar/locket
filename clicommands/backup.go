@@ -14,6 +14,14 @@ import (
 	"time"
 )
 
+var s3Client aws.S3Client
+var conf configloader.Configopts
+
+func init() {
+	conf = *configloader.Config()
+	s3Client = aws.NewS3Client(conf.Auth.Aws.Profile, conf.Auth.Aws.Bucket)
+}
+
 /*
 commandBackup takes all directories in the .locket.conf.yaml and uploads them to s3.
 Each directory is uploaded as its own tar archive (gziped) and then encrypted in base64
@@ -43,7 +51,7 @@ func encryptAndUploadToS3(dir, bucket, profile, prefix string) {
 
 	now := time.Now().UTC()
 
-	aws.UploadToS3(encrypted, bucket, profile, prefix+"/"+normalizeFilepath(dir), map[string]string{
+	s3Client.Upload(encrypted, prefix+"/"+normalizeFilepath(dir), map[string]string{
 		"Created":          isoDateString(now),
 		"OriginalFilepath": dir,
 		"locket-version":   metadata.ApiVersion(),

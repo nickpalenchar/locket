@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"locket/aws"
 	"locket/cli"
 	"locket/configloader"
 	"locket/stringutil"
@@ -23,7 +22,7 @@ import (
 
 func commandRestore() int {
 	cfg := configloader.Config()
-	fullObjs := aws.ListObjects(cfg.Auth.Aws.Bucket, cfg.Auth.Aws.Profile)
+	fullObjs := s3Client.List()
 
 	if len(fullObjs) == 0 {
 		fmt.Print("There are no backups available.\n")
@@ -93,7 +92,7 @@ func restoreAllWithPrefix(bucket, prefix, targetDir string, fullObjs []types.Obj
 	pw := "thisisatester2888kd89od80228de<3@"
 	for _, obj := range fullObjs {
 		if strings.HasPrefix(*obj.Key, prefix) {
-			data := aws.DownloadFromS3(bucket, cfg.Auth.Aws.Profile, *obj.Key)
+			data := s3Client.Download(*obj.Key)
 			decrypted := decryptDataWithPassword(data, pw)
 			err := tar.Extract(decrypted, targetDir)
 			if err != nil {
