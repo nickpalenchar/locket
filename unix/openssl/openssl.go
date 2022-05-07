@@ -7,6 +7,8 @@ package openssl
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"locket/cli"
 	"log"
 	"os/exec"
 )
@@ -29,7 +31,8 @@ func Enc(stdin *bytes.Buffer, pw string) *bytes.Buffer {
 /*
 Dec decrypts incoming base64 data using a provided password
 */
-func Dec(stdin *bytes.Buffer, pw string) *bytes.Buffer {
+func Dec(stdin io.Reader, pw string) *bytes.Buffer {
+	cli.Prompt("before dec")
 	cmd := exec.Command("openssl", "enc", "-d", "-aes-256-cbc", "-pass", fmt.Sprintf("pass:%s", pw), "-base64")
 	cmd.Stdin = stdin
 
