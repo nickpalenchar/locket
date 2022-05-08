@@ -14,6 +14,10 @@ type Configopts struct {
 	Auth        struct {
 		Aws AwsOpts
 	}
+	/* Password is used whenever
+	"prompt" - password is prompted every time
+	*/
+	PasswordType string `yaml:"passwordType"`
 }
 
 type AwsOpts struct {
@@ -63,5 +67,6 @@ func NewConfig(dir string, awsProfile string, awsBucket string) *Configopts {
 				Bucket:  awsBucket,
 			},
 		},
+		PasswordType: "prompt",
 	}
 }
