@@ -1,10 +1,12 @@
 package clicommands
 
 import (
+	"bytes"
 	"fmt"
 	"locket/aws"
 	"locket/cli"
 	"locket/configloader"
+	"locket/constants"
 	"locket/metadata"
 	"locket/password"
 	"locket/unix/openssl"
@@ -59,6 +61,10 @@ func encryptAndUploadToS3(dir, bucket, profile, prefix string, pw string) {
 	encrypted := openssl.Enc(archive, pw)
 
 	now := time.Now().UTC()
+
+	checkfile := bytes.NewBufferString(constants.Constants.VERIFIER_FILE_CONTENTS)
+	encCheckFile := openssl.Enc(checkfile, pw)
+	s3Client.Upload(encCheckFile, prefix+"/"+constants.Constants.VERIFIER_FILE, map[string]string{})
 
 	s3Client.Upload(encrypted, prefix+"/"+normalizeFilepath(dir), map[string]string{
 		"Created":          isoDateString(now),
