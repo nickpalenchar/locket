@@ -89,7 +89,7 @@ func reportRestorePlan(downloadLocation string) {
 }
 
 func restoreAllWithPrefix(bucket, prefix, targetDir string, fullObjs []types.Object, cfg *configloader.Configopts) (result []*bytes.Buffer) {
-	pw := "thisisatester2888kd89od80228de<3@"
+	pw := cli.PromptPass("Enter the encryption password: ")
 	for _, obj := range fullObjs {
 		if strings.HasPrefix(*obj.Key, prefix) {
 			data := s3Client.Download(*obj.Key)

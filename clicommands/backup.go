@@ -6,8 +6,10 @@ import (
 	"locket/cli"
 	"locket/configloader"
 	"locket/metadata"
+	"locket/password"
 	"locket/unix/openssl"
 	"locket/unix/tar"
+	"log"
 	"os"
 	"os/user"
 	"strings"
@@ -31,6 +33,11 @@ func commandBackup() int {
 
 	prefix := isoDateString(time.Now().UTC())
 
+	pw := password.GetPassword(conf.PasswordType)
+	if pw == "" {
+		log.Fatalf("Invalid option for \"passwordType\" in config.")
+	}
+
 	for _, dir := range conf.Directories {
 		fmt.Printf("Backing up dir %s\n", expandPath(dir))
 
@@ -39,15 +46,17 @@ func commandBackup() int {
 			conf.Auth.Aws.Bucket,
 			conf.Auth.Aws.Profile,
 			prefix,
+			pw,
 		)
 		cli.Print("Done 🔐")
 	}
 	return 0
 }
 
-func encryptAndUploadToS3(dir, bucket, profile, prefix string) {
+func encryptAndUploadToS3(dir, bucket, profile, prefix string, pw string) {
+
 	archive := tar.Create(dir)
-	encrypted := openssl.Enc(archive, "thisisatester2888kd89od80228de<3@")
+	encrypted := openssl.Enc(archive, pw)
 
 	now := time.Now().UTC()
 

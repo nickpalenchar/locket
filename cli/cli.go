@@ -10,6 +10,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"syscall"
+
+	"golang.org/x/term"
 )
 
 type CliCommand struct {
@@ -108,4 +111,19 @@ func Prompt(message string) string {
 	reader := bufio.NewReader(os.Stdin)
 	input, _ := reader.ReadString('\n')
 	return strings.Trim(input, "\n")
+}
+
+// https://dev.to/tidalmigrations/interactive-cli-prompts-in-go-3bj9
+func PromptPass(message string) string {
+	var s string
+	for {
+		fmt.Fprint(os.Stderr, message+" ")
+		b, _ := term.ReadPassword(int(syscall.Stdin))
+		s = string(b)
+		if s != "" {
+			break
+		}
+	}
+	fmt.Println()
+	return s
 }
