@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"os/exec"
 )
 
@@ -30,7 +29,7 @@ func Enc(stdin *bytes.Buffer, pw string) *bytes.Buffer {
 /*
 Dec decrypts incoming base64 data using a provided password
 */
-func Dec(stdin io.Reader, pw string) *bytes.Buffer {
+func Dec(stdin io.Reader, pw string) (*bytes.Buffer, error) {
 	cmd := exec.Command("openssl", "enc", "-d", "-aes-256-cbc", "-pass", fmt.Sprintf("pass:%s", pw), "-base64")
 	cmd.Stdin = stdin
 
@@ -43,8 +42,8 @@ func Dec(stdin io.Reader, pw string) *bytes.Buffer {
 	err := cmd.Run()
 
 	if err != nil {
-		log.Fatalf("Error Decrypting: %s %s", eout.String(), err)
+		return &out, err
 	}
 
-	return &out
+	return &out, nil
 }

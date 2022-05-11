@@ -6,6 +6,7 @@ import (
 	"io"
 	"locket/cli"
 	"locket/configloader"
+	"locket/constants"
 	"locket/stringutil"
 	"locket/unix/openssl"
 	"locket/unix/tar"
@@ -90,13 +91,23 @@ func reportRestorePlan(downloadLocation string) {
 
 func restoreAllWithPrefix(bucket, prefix, targetDir string, fullObjs []types.Object, cfg *configloader.Configopts) (result []*bytes.Buffer) {
 	pw := cli.PromptPass("Enter the encryption password: ")
+
+	// pre-flight check
+	checkfile := s3Client.Download(prefix + "/" + constants.Constants.VERIFIER_FILE)
+	_, err := openssl.Dec(checkfile, pw)
+
+	if err != nil {
+		cli.Print("Incorrect password")
+		os.Exit(1)
+	}
+
 	for _, obj := range fullObjs {
-		if strings.HasPrefix(*obj.Key, prefix) {
+		if strings.HasPrefix(*obj.Key, prefix) && *obj.Key != prefix+"/"+constants.Constants.VERIFIER_FILE {
 			data := s3Client.Download(*obj.Key)
 			decrypted := decryptDataWithPassword(data, pw)
 			err := tar.Extract(decrypted, targetDir)
 			if err != nil {
-				cli.Print(fmt.Sprintf("[Error]: %s", err))
+				cli.Print(fmt.Sprintf("[Error] extracting %s: %s", *obj.Key, err))
 			}
 			result = append(result, decrypted)
 		}
@@ -107,7 +118,8 @@ func restoreAllWithPrefix(bucket, prefix, targetDir string, fullObjs []types.Obj
 
 /* decryptDataWithPassword decrypts base64 data using a provided password. */
 func decryptDataWithPassword(data io.Reader, pw string) *bytes.Buffer {
-	return openssl.Dec(data, pw)
+	dec, _ := openssl.Dec(data, pw)
+	return dec
 }
 
 func parseTopLevelObjects(objs []types.Object) []string {
