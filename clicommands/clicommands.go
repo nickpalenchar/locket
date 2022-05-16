@@ -26,6 +26,10 @@ func AddCommands(c *cli.Cli) {
 		Help: "Restore files from a backup",
 	})
 
+	c.Register("set-password", commandSetPassword, &cli.CliOpts{
+		Help: "Set a default password to automatically encrypt files with on backup",
+	})
+
 	debugcommands.AddDebugCommands(c)
 }
 

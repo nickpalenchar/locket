@@ -102,6 +102,13 @@ func Print(s string) {
 	fmt.Println(s)
 }
 
+/* Hint takes a string and prepends with "Hint: ", printing it to the terminal.
+If hints are turned off (a future feature)
+*/
+func Hint(message string) {
+	fmt.Printf("Hint: %s\n", message)
+}
+
 /*
 Prompt prompts the users for a value and retruns
 it

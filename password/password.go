@@ -20,17 +20,19 @@ If an invalid type is provided, it returns an empty string.
 */
 func GetPassword(t string) string {
 	if t == "prompt" {
-		return promptPassword(false)
+		return PromptPassword(true)
 	}
 
 	return ""
 }
 
-func promptPassword(checkKeychain bool) string {
+func PromptPassword(checkKeychain bool) string {
 
 	if checkKeychain {
 		pw := GetKeychainPassword()
 		if pw != "" {
+			cli.Print("Using the default password")
+			cli.Hint("you can enter a different one for a specific backup with `locket backup -i`")
 			return pw
 		}
 	}
@@ -40,7 +42,9 @@ func promptPassword(checkKeychain bool) string {
 		pass1 := cli.PromptPass("Enter a password: ")
 		pass2 := cli.PromptPass("Re-enter to verify: ")
 		if pass1 == pass2 {
-			cli.Print("Hint: you can set a default password with `locket password set` and avoid this prompt")
+			if checkKeychain {
+				cli.Hint("you can set a default password with `locket password set` and avoid this prompt")
+			}
 			return pass1
 		}
 		cli.Print("Passwords do not match.")
